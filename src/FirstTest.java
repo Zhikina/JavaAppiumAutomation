@@ -11,79 +11,134 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 
-public class FirstTest
-{
+public class FirstTest {
 
     private AppiumDriver driver;
 
-   @Before
-    public void sepUP () throws Exception
-    {
+    @Before
+    public void sepUP() throws Exception {
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
-        capabilities.setCapability("platformName","Android");
-        capabilities.setCapability("deviceName","AndroidTestDevice");
-        capabilities.setCapability("platformVersion","8.0");
-        capabilities.setCapability("automationName","Appium");
-        capabilities.setCapability("appPackage","org.wikipedia");
-        capabilities.setCapability("appActivity",".main.MainActivity");
-        capabilities.setCapability("app","C:\\Users\\Swan\\Desktop\\JavaAppiumAutomation\\apks\\org.wikipedia.apk");
+        capabilities.setCapability("platformName", "Android");
+        capabilities.setCapability("deviceName", "AndroidTestDevice");
+        capabilities.setCapability("platformVersion", "6.0");
+        capabilities.setCapability("automationName", "Appium");
+        capabilities.setCapability("appPackage", "org.wikipedia");
+        capabilities.setCapability("appActivity", ".main.MainActivity");
+        capabilities.setCapability("app", "C:\\Users\\Swan\\Desktop\\JavaAppiumAutomation\\apks\\org.wikipedia.apk");
 
 
-        driver  = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
+        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
     }
 
     @After
-    public void tearDown()
-    {
+    public void tearDown() {
         driver.quit();
     }
 
 
     @Test
-    public void  testSearchValue()
-    {
+    public void testSearchValue() {
         waitForElementAndClic(
                 By.xpath("//*[contains(@text,'Search Wikipedia')]"),
                 "Cannot find 'Search Wikipedia' input",
                 5
         );
 
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Java",
+                "Cannnot find search imput",
+                5
+        );
 
 
-       WebElement search_element =  waitForElementPresent(
-                By.id("org.wikipedia:id/search_src_text"),
+        WebElement search_element = waitForElementPresent(
+                By.id("org.wikipedia:id/search_container"),
                 "Cannot find artical title",
                 15
         );
 
+        List<WebElement> searche_pages = search_element.findElements(By.id("org.wikipedia:id/page_list_item_title"));
 
-        String searche_text = search_element.getAttribute("text");
+        int element_count = searche_pages.size() ;
 
-        Assert.assertEquals(
-                "No desired value!",
-                "Search…",
-                searche_text
+        if (element_count > 1) {
+
+            waitForElementClear(
+                    By.id("org.wikipedia:id/search_src_text"),
+                    "Cannot find search field",
+                    5
+            );
+
+
+            waitForElementAndClic(
+                    By.id( "org.wikipedia:id/search_close_btn"),
+                    "Cannot find  x to cancelsearch",
+                    5
+            );
+
+
+            waitForElementNotPresent(
+                    By.id("org.wikipedia:id/search_close_btn"),
+                    "x is still present on the page",
+                    5
+            );
+
+
+            System.out.println("Multiple pages found!  " + element_count);
+        } else {
+            System.out.println("Not enough articles!  "  + element_count);
+        }
+    }
+
+
+
+
+
+    private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        return wait.until(ExpectedConditions.presenceOfElementLocated(by)
         );
     }
 
 
-    private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds)
-      {
-            WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-            wait.withMessage(error_message + "\n");
-            return wait.until(ExpectedConditions.presenceOfElementLocated(by)
-            );
-      }
+    private WebElement waitForElementAndClic(By by, String error_message, long timeoutInSeconds) {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
+        element.click();
+        return element;
+    }
 
 
-     private WebElement waitForElementAndClic(By by, String error_message, long timeoutInSeconds)
-       {
-             WebElement element =  waitForElementPresent(by,error_message,timeoutInSeconds);
-             element.click();
-             return element;
-        }
+    private WebElement waitForElementAndSendKeys(By by, String value, String error_message, long timeoutInSeconds) {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
+        element.sendKeys(value);
+        return element;
+
+
+    }
+
+    private  WebElement waitForElementClear(By by, String error_message, long timeoutInSecond)
+    {
+        WebElement element = waitForElementPresent(by, error_message,timeoutInSecond);
+        element.clear();
+        return element;
+    }
+
+    private boolean waitForElementNotPresent(By by, String error_message, long timeoutInSecond)
+    {
+        WebDriverWait wait = new WebDriverWait(driver,timeoutInSecond);
+        wait.withMessage(error_message+ "/n");
+
+        return wait.until(
+                ExpectedConditions.invisibilityOfElementLocated(by)
+        );
+    }
+
+
 
 }
