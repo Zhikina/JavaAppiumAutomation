@@ -64,35 +64,24 @@ public class FirstTest {
 
         List<WebElement> searche_pages = search_element.findElements(By.id("org.wikipedia:id/page_list_item_title"));
 
-        int element_count = searche_pages.size() ;
-
-        if (element_count > 1) {
-
-            waitForElementClear(
-                    By.id("org.wikipedia:id/search_src_text"),
-                    "Cannot find search field",
-                    5
-            );
-
-
-            waitForElementAndClic(
-                    By.id( "org.wikipedia:id/search_close_btn"),
-                    "Cannot find  x to cancelsearch",
-                    5
-            );
-
-
-            waitForElementNotPresent(
-                    By.id("org.wikipedia:id/search_close_btn"),
-                    "x is still present on the page",
-                    5
-            );
-
-
-            System.out.println("Multiple pages found!  " + element_count);
-        } else {
-            System.out.println("Not enough articles!  "  + element_count);
+        int i = 0;
+        int calk = 0;
+        while (i <= searche_pages.size()-1) {
+               String element_search = searche_pages.get(i).getAttribute("text");
+               if(element_search.toUpperCase().contains("JAVA")) {
+                   calk = calk+1;
+               }
+               i++;
         }
+
+        if(calk == searche_pages.size() ){
+            System.out.println("Every word has a word 'JAVA' ");
+
+        }else {
+            System.out.println(" NOT every word has 'JAVA' ");
+        }
+
+
     }
 
 
