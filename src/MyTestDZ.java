@@ -321,6 +321,7 @@ public class MyTestDZ {
     private  String woitForElementAndGetAtributr(By by, String attribute, String error_message, long timeoutInSecond)
     {
         WebElement element =  waitForElementPresent(by,error_message,timeoutInSecond);
+
         return element.getAttribute(attribute);
     }
 

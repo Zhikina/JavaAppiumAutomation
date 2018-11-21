@@ -535,7 +535,7 @@ protected void assertElementNotPresent(By by, String error_message)
 private  String woitForElementAndGetAtributr(By by, String attribute, String error_message, long timeoutInSecond)
 {
     WebElement element =  waitForElementPresent(by,error_message,timeoutInSecond);
-    return element.getAttribute(attribute);
+     return element.getAttribute(attribute);
 }
 
 
